@@ -1,0 +1,97 @@
+const User = require("../models/user");
+const bcrypt = require("bcryptjs");
+
+const getAllUsers = async (req, res) => {
+  try {
+    const { page, limit, search, role, status } = req.query;
+    const pageNum = parseInt(page) || 1;
+    const limitNum = parseInt(limit) || 10;
+    const query = {};
+    if (search) {
+      query.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { email: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    if (role) {
+      query.role = role;
+    }
+
+    if (status) {
+      query.status = status;
+    }
+
+    const totalUsers = await User.countDocuments(query);
+    const totalPages = Math.ceil(totalUsers / limitNum);
+    const skip = (pageNum - 1) * limitNum;
+
+    const users = await User.find(query)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limitNum)
+        .select("-password");
+
+    return res.status(200).json({
+      users,
+      pagination: {
+        totalUsers,
+        totalPages,
+        currentPage: pageNum,
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+const createUser = async (req, res) => {
+  try {
+  const { name, email, password, role, status } = req.body;
+
+  if (!name || !email || !password || !role || !status) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
+
+  const allowedRoles = ["admin", "manager", "user"];
+    const allowedStatuses = ["active", "inactive"];
+
+    if (!allowedRoles.includes(role)) {
+        return res.status(400).json({ message: "Invalid role" });
+    }
+  if (!allowedStatuses.includes(status)) {
+        return res.status(400).json({ message: "Invalid status" });
+    }
+
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: "Email already exists" });
+    }
+
+    const hash = await bcrypt.hash(password, 12);
+
+    const user = new User({ name, email, password: hash, role, status, createdBy: req.user.id, updatedBy: req.user.id });
+    await user.save();
+    
+    return res.status(201).json({
+      message: "User created successfully",
+      user: { 
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        status: user.status,
+        createdBy: user.createdBy,
+        updatedBy: user.updatedBy,
+        createdAt: user.createdAt,
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+module.exports = {
+  getAllUsers,
+  createUser,
+};

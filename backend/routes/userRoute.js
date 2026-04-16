@@ -3,7 +3,7 @@ const router = express.Router();
 
 const authMiddleware = require("../middlewares/authMiddleware");
 const roleMiddleware = require("../middlewares/roleMiddleware");
-const { getAllUsers, createUser, updateUser } = require("../controllers/userController");
+const { getAllUsers, createUser, updateUser, getUserById } = require("../controllers/userController");
 
 router.get("/", authMiddleware, roleMiddleware("admin", "manager"), getAllUsers);
 
@@ -15,5 +15,12 @@ router.patch(
   roleMiddleware("admin", "manager"),
   updateUser
 );
+
+router.get(
+    "/:id",
+    authMiddleware,
+    roleMiddleware("admin", "manager"),
+    getUserById
+)
 
 module.exports = router;

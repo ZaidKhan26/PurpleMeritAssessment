@@ -135,16 +135,16 @@ const updateUser = async (req, res) => {
 
     if (email) {
       const existingUser = await User.findOne({ email, _id: { $ne: id } });
-    if (existingUser) {
-      return res.status(400).json({ message: "Email already exists" });
-    }
-    user.email = email;
+      if (existingUser) {
+        return res.status(400).json({ message: "Email already exists" });
+      }
+      user.email = email;
     }
 
     if (name) user.name = name;
-    if(role) user.role = role;
-    if(status) user.status = status;
-    
+    if (role) user.role = role;
+    if (status) user.status = status;
+
     if (password) {
       user.password = await bcrypt.hash(password, 12);
     }
@@ -171,8 +171,40 @@ const updateUser = async (req, res) => {
   }
 };
 
+const getUserById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const targetUser = await User.findById(req.params.id).select("-password");
+
+    if (!targetUser) {
+      return res.status(404).json({ message: "user not found" });
+    }
+
+    if (req.user.role === "manager" && targetUser.role === "admin") {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+
+    return res.status(200).json({
+      user: {
+        id: targetUser._id,
+        name: targetUser.name,
+        email: targetUser.email,
+        role: targetUser.role,
+        status: targetUser.status,
+        createdBy: targetUser.createdBy,
+        updatedBy: targetUser.updatedBy,
+        createdAt: targetUser.createdAt,
+        updatedAt: targetUser.updatedAt,
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
 module.exports = {
   getAllUsers,
   createUser,
   updateUser,
+  getUserById,
 };

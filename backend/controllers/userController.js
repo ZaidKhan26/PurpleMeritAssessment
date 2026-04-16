@@ -109,8 +109,8 @@ const updateUser = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    if (role === "manager") {
-      if (role === "admin") {
+    if (req.user.role === "manager") {
+      if (user.role === "admin") {
         return res
           .status(403)
           .json({ message: "Managers cannot update admin users." });
@@ -129,7 +129,7 @@ const updateUser = async (req, res) => {
     }
 
     const allowedStatuses = ["active", "inactive"];
-    if (role && !allowedStatuses.includes(role)) {
+    if (status && !allowedStatuses.includes(role)) {
       return res.status(400).json({ message: "Invalid status" });
     }
 

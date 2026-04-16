@@ -1,44 +1,47 @@
 const User = require("../models/user");
 
 const getAllUsers = async (req, res) => {
-  const { page, limit, search, role, status } = req.query;
-  const query = {};
-  if (search) {
-    query.$or = [
-      { name: { $regex: search, $options: "i" } },
-      { email: { $regex: search, $options: "i" } },
-    ];
-  }
-
-  if (role) {
-    query.role = role;
-  }
-
-  if (status) {
-    query.status = status;
-  }
-
-  User.countDocuments(query, (err, count) => {
-    if (err) {
-      return res.status(500).json({ message: "Error counting users" });
+  try {
+    const { page, limit, search, role, status } = req.query;
+    const pageNum = parseInt(page) || 1;
+    const limitNum = parseInt(limit) || 10;
+    const query = {};
+    if (search) {
+      query.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { email: { $regex: search, $options: "i" } },
+      ];
     }
-    const totalPages = Math.ceil(count / limit);
-    const currentPage = Math.min(page, totalPages);
-    const skip = (currentPage - 1) * limit;
-    User.find(query)
-      .skip(skip)
-      .limit(limit)
-      .exec((err, users) => {
-        if (err) {
-          return res.status(500).json({ message: "Error fetching users" });
-        }
-        res.json({
-          users,
-          totalPages,
-          currentPage,
-        });
-      });
-  });
+
+    if (role) {
+      query.role = role;
+    }
+
+    if (status) {
+      query.status = status;
+    }
+
+    const totalUsers = await User.countDocuments(query);
+    const totalPages = Math.ceil(totalUsers / limitNum);
+    const skip = (pageNum - 1) * limitNum;
+
+    const users = await User.find(query)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limitNum)
+        .select("-password");
+
+    return res.status(200).json({
+      users,
+      pagination: {
+        totalUsers,
+        totalPages,
+        currentPage: pageNum,
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({ message: "Server error" });
+  }
 };
 
 module.exports = {

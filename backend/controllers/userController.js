@@ -202,9 +202,49 @@ const getUserById = async (req, res) => {
   }
 };
 
+const deactivateUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const targetUser = await User.findById(id);
+
+    if (!targetUser) {
+      return res.status(404).json({ message: "User not Found " });
+    }
+
+    if (req.user.role === "manager" && targetUser.role === "admin") {
+      return res.status(403).json({ message: "Foridden." });
+    }
+
+    if (targetUser.status === "inactive") {
+      return res.json({ message: "User already inactive" });
+    }
+
+    targetUser.status = "inactive";
+    targetUser.updatedBy = req.user.id;
+
+    await targetUser.save();
+
+    return res.status(200).json({
+      message: "User deactivated successfully",
+      user: {
+        id: targetUser._id,
+        name: targetUser.name,
+        email: targetUser.email,
+        role: targetUser.role,
+        status: targetUser.status,
+        updatedBy: targetUser.updatedBy,
+        updatedAt: targetUser.updatedAt,
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
 module.exports = {
   getAllUsers,
   createUser,
   updateUser,
   getUserById,
+  deactivateUser,
 };

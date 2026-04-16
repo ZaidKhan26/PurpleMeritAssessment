@@ -12,7 +12,7 @@ async function seedUsers() {
   try {
     await mongoose.connect(process.env.MONGO_URI);
 
-    const hash = await bcrypt.hash("KhanZaid123@", 12);
+    const hash = await bcrypt.hash(process.env.ADMINPASSWORD, 12);
 
     const seedEmails = [
       "cosmicos41@gmail.com",

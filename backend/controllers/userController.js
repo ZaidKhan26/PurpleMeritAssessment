@@ -129,7 +129,7 @@ const updateUser = async (req, res) => {
     }
 
     const allowedStatuses = ["active", "inactive"];
-    if (status && !allowedStatuses.includes(role)) {
+    if (status && !allowedStatuses.includes(status)) {
       return res.status(400).json({ message: "Invalid status" });
     }
 

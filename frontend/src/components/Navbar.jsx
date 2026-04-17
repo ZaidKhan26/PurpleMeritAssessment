@@ -20,6 +20,8 @@ function Navbar() {
 
       <div>
         {user && <span style={{ marginRight: "10px" }}>{user.email}</span>}
+        <button onClick={() => navigate("/dashboard")}>Dashboard</button>
+        <button onClick={() => navigate("/users")}>Users</button>
         <button onClick={() => navigate("/profile")}>Profile</button>
         <button onClick={handleLogout}>Logout</button>
       </div>

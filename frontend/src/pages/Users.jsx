@@ -14,6 +14,7 @@ function Users() {
   const [status, setStatus] = useState("");
 
   const navigate = useNavigate();
+  const currentUser = JSON.parse(localStorage.getItem("user") || "null");
 
   const fetchUsers = async () => {
     try {
@@ -47,9 +48,9 @@ function Users() {
       await api.patch(`/users/${id}/deactivate`);
       fetchUsers();
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to deactivate user")
+      setError(err.response?.data?.message || "Failed to deactivate user");
     }
-  }
+  };
 
   return (
     <div>
@@ -101,7 +102,9 @@ function Users() {
         </label>
       </div>
 
-      <button onClick={() => navigate("/create-user")}>Create User</button>
+      {currentUser?.role === "admin" && (
+        <button onClick={() => navigate("/create-user")}>Create User</button>
+      )}
 
       {loading && <p>Loading...</p>}
       {error && <p>{error}</p>}
@@ -128,13 +131,23 @@ function Users() {
                   <td>{user.role}</td>
                   <td>{user.status}</td>
                   <td>
-                    <button onClick={() => navigate(`/users/${user._id}/edit`)}>
-                      Edit
-                    </button>
+                    {(currentUser?.role === "admin" ||
+                      currentUser?.role === "manager") && (
+                      <button
+                        onClick={() => navigate(`/users/${user._id}/edit`)}
+                      >
+                        Edit
+                      </button>
+                    )}
 
-                    <button onClick={() => handleDeactivate(user._id)} disabled={user.status === "inactive"}>
-                      Deactivate
-                    </button>
+                    {currentUser?.role === "admin" && (
+                      <button
+                        onClick={() => handleDeactivate(user._id)}
+                        disabled={user.status === "inactive"}
+                      >
+                        Deactivate
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}

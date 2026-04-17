@@ -42,6 +42,15 @@ function Users() {
     fetchUsers();
   }, [role, status, page, search]);
 
+  const handleDeactivate = async (id) => {
+    try {
+      await api.patch(`/users/${id}/deactivate`);
+      fetchUsers();
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to deactivate user")
+    }
+  }
+
   return (
     <div>
       <Navbar />
@@ -121,6 +130,10 @@ function Users() {
                   <td>
                     <button onClick={() => navigate(`/users/${user._id}/edit`)}>
                       Edit
+                    </button>
+
+                    <button onClick={() => handleDeactivate(user._id)} disabled={user.status === "inactive"}>
+                      Deactivate
                     </button>
                   </td>
                 </tr>

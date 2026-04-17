@@ -13,13 +13,14 @@ function Navbar() {
   };
 
   return (
-    <div style={{ display: "flex", justifyContent: "space-between", padding: "10px", background: "#eee" }}>
+    <div>
       <div>
         <strong>Dashboard</strong>
       </div>
 
       <div>
         {user && <span style={{ marginRight: "10px" }}>{user.email}</span>}
+        <button onClick={() => navigate("/profile")}>Profile</button>
         <button onClick={handleLogout}>Logout</button>
       </div>
     </div>

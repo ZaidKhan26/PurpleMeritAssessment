@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
 import Navbar from "../components/Navbar";
+import { useNavigate } from "react-router-dom";
 
 function Users() {
   const [users, setUsers] = useState([]);
@@ -11,6 +12,8 @@ function Users() {
   const [totalPages, setTotalPages] = useState(1);
   const [role, setRole] = useState("");
   const [status, setStatus] = useState("");
+
+  const navigate = useNavigate();
 
   const fetchUsers = async () => {
     try {
@@ -59,11 +62,13 @@ function Users() {
       <div>
         <label>
           Role filter:{" "}
-          <select value={role} onChange={(e) => {
-            setRole(e.target.value);
-            setPage(1);
-
-          }}>
+          <select
+            value={role}
+            onChange={(e) => {
+              setRole(e.target.value);
+              setPage(1);
+            }}
+          >
             <option value="">All</option>
             <option value="admin">admin</option>
             <option value="manager">manager</option>
@@ -73,16 +78,21 @@ function Users() {
 
         <label>
           Status filter:{" "}
-          <select value={status} onChange={(e) => {
-            setStatus(e.target.value);
-            setPage(1);
-          }}>
+          <select
+            value={status}
+            onChange={(e) => {
+              setStatus(e.target.value);
+              setPage(1);
+            }}
+          >
             <option value="">All</option>
             <option value="active">active</option>
             <option value="inactive">inactive</option>
           </select>
         </label>
       </div>
+
+      <button onClick={() => navigate("/create-user")}>Create User</button>
 
       {loading && <p>Loading...</p>}
       {error && <p>{error}</p>}

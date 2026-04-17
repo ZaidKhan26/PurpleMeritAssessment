@@ -3,6 +3,7 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import Users from "./pages/Users";
+import CreateUser from "./pages/CreateUser";
 
 function App() {
   return (
@@ -22,6 +23,14 @@ function App() {
           element={
             <ProtectedRoute>
               <Users />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/create-user"
+          element={
+            <ProtectedRoute>
+              <CreateUser />
             </ProtectedRoute>
           }
         />

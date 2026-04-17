@@ -53,11 +53,11 @@ function Users() {
   };
 
   return (
-    <div>
+    <div className="min-h-screen bg-gray-100 p-6">
       <Navbar />
-      <h2>user List</h2>
+      <h2 className="text-2xl font-bold mb-4">User List</h2>
 
-      <div>
+      <div className="flex flex-wrap gap-4 mb-4">
         <input
           type="text"
           placeholder="Search by name or email"
@@ -66,44 +66,44 @@ function Users() {
             setSearch(e.target.value);
             setPage(1);
           }}
+          className="border p-2 rounded w-64"
         />
-      </div>
 
-      <div>
-        <label>
-          Role filter:{" "}
-          <select
-            value={role}
-            onChange={(e) => {
-              setRole(e.target.value);
-              setPage(1);
-            }}
-          >
-            <option value="">All</option>
-            <option value="admin">admin</option>
-            <option value="manager">manager</option>
-            <option value="user">user</option>
-          </select>
-        </label>
+        <select
+          value={role}
+          onChange={(e) => {
+            setRole(e.target.value);
+            setPage(1);
+          }}
+          className="border p-2 rounded"
+        >
+          <option value="">All Roles</option>
+          <option value="admin">Admin</option>
+          <option value="manager">Manager</option>
+          <option value="user">User</option>
+        </select>
 
-        <label>
-          Status filter:{" "}
-          <select
-            value={status}
-            onChange={(e) => {
-              setStatus(e.target.value);
-              setPage(1);
-            }}
-          >
-            <option value="">All</option>
-            <option value="active">active</option>
-            <option value="inactive">inactive</option>
-          </select>
-        </label>
+        <select
+          value={status}
+          onChange={(e) => {
+            setStatus(e.target.value);
+            setPage(1);
+          }}
+          className="border p-2 rounded"
+        >
+          <option value="">All Status</option>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
       </div>
 
       {currentUser?.role === "admin" && (
-        <button onClick={() => navigate("/create-user")}>Create User</button>
+        <button
+          onClick={() => navigate("/create-user")}
+          className="bg-blue-600 text-white px-4 py-2 rounded mb-4 hover:bg-blue-700"
+        >
+          + Create User
+        </button>
       )}
 
       {loading && <p>Loading...</p>}
@@ -113,27 +113,38 @@ function Users() {
 
       {!loading && users.length > 0 && (
         <>
-          <table>
-            <thead>
+          <table className="w-full bg-white shadow rounded overflow-hidden">
+            <thead className="bg-gray-200">
               <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>status</th>
-                <th>Action</th>
+                <th className="p-3 text-left">Name</th>
+                <th className="p-3 text-left">Email</th>
+                <th className="p-3 text-left">Role</th>
+                <th className="p-3 text-left">status</th>
+                <th className="p-3 text-left">Action</th>
               </tr>
             </thead>
             <tbody>
               {users.map((user) => (
                 <tr key={user._id}>
-                  <td>{user.name}</td>
-                  <td>{user.email}</td>
-                  <td>{user.role}</td>
-                  <td>{user.status}</td>
-                  <td>
+                  <td className="p-3">{user.name}</td>
+                  <td className="p-3">{user.email}</td>
+                  <td className="p-3">{user.role}</td>
+                  <td className="p-3">
+                    <span
+                      className={`px-2 py-1 rounded text-sm ${
+                        user.status === "active"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-red-100 text-red-700"
+                      }`}
+                    >
+                      {user.status}
+                    </span>
+                  </td>
+                  <td className="p-3">
                     {(currentUser?.role === "admin" ||
                       currentUser?.role === "manager") && (
                       <button
+                        className="bg-yellow-500 text-white px-3 py-1 rounded mr-2 hover:bg-yellow-600"
                         onClick={() => navigate(`/users/${user._id}/edit`)}
                       >
                         Edit
@@ -144,6 +155,7 @@ function Users() {
                       <button
                         onClick={() => handleDeactivate(user._id)}
                         disabled={user.status === "inactive"}
+                        className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 disabled:bg-gray-400"
                       >
                         Deactivate
                       </button>
@@ -154,18 +166,23 @@ function Users() {
             </tbody>
           </table>
 
-          <div style={{ marginTop: "16px" }}>
-            <button onClick={() => setPage(page - 1)} disabled={page === 1}>
+          <div className="flex justify-between items-center mt-4">
+            <button
+              onClick={() => setPage(page - 1)}
+              disabled={page === 1}
+              className="bg-gray-300 px-3 py-1 rounded disabled:opacity-50"
+            >
               Previous
             </button>
 
-            <span>
+            <span className="font-medium">
               Page {page} of {totalPages}
             </span>
 
             <button
               onClick={() => setPage(page + 1)}
               disabled={page === totalPages}
+              className="bg-gray-300 px-3 py-1 rounded disabled:opacity-50"
             >
               Next
             </button>

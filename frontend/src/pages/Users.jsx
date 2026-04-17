@@ -9,6 +9,8 @@ function Users() {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [role, setRole] = useState("");
+  const [status, setStatus] = useState("");
 
   const fetchUsers = async () => {
     try {
@@ -20,10 +22,12 @@ function Users() {
           search,
           page,
           limit: 5,
+          role,
+          status,
         },
       });
       setUsers(res.data.users);
-      setTotalPages(res.data.pagination.totalPages || 1)
+      setTotalPages(res.data.pagination.totalPages || 1);
     } catch (err) {
       setError(err.response?.data?.message || "Failed to fetch users");
     } finally {
@@ -33,7 +37,7 @@ function Users() {
 
   useEffect(() => {
     fetchUsers();
-  }, [page, search]);
+  }, [role, status, page, search]);
 
   return (
     <div>
@@ -50,6 +54,34 @@ function Users() {
             setPage(1);
           }}
         />
+      </div>
+
+      <div>
+        <label>
+          Role filter:{" "}
+          <select value={role} onChange={(e) => {
+            setRole(e.target.value);
+            setPage(1);
+
+          }}>
+            <option value="">All</option>
+            <option value="admin">admin</option>
+            <option value="manager">manager</option>
+            <option value="user">user</option>
+          </select>
+        </label>
+
+        <label>
+          Status filter:{" "}
+          <select value={status} onChange={(e) => {
+            setStatus(e.target.value);
+            setPage(1);
+          }}>
+            <option value="">All</option>
+            <option value="active">active</option>
+            <option value="inactive">inactive</option>
+          </select>
+        </label>
       </div>
 
       {loading && <p>Loading...</p>}
@@ -81,10 +113,7 @@ function Users() {
           </table>
 
           <div style={{ marginTop: "16px" }}>
-            <button
-              onClick={() => setPage(page - 1)}
-              disabled={page === 1}
-            >
+            <button onClick={() => setPage(page - 1)} disabled={page === 1}>
               Previous
             </button>
 

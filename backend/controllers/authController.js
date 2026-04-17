@@ -26,30 +26,82 @@ const userLogin = async (req, res) => {
 
     const token = generateToken(user);
 
-    res.status(200).json({ token, user: { id: user._id, name: user.name, email: user.email, role: user.role, status: user.status } });
+    res
+      .status(200)
+      .json({
+        token,
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          status: user.status,
+        },
+      });
   } catch (error) {
     res.status(500).json({ message: "Server error" });
   }
 };
 
 const getProfile = async (req, res) => {
-    try {
-        const userId = req.user.id;
+  try {
+    const userId = req.user.id;
 
-        const user = await User.findById(userId).select('-password');
+    const user = await User.findById(userId).select("-password");
 
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-
-        return res.status(200).json(user);
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({ message: 'Server error' });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
+
+    return res.status(200).json(user);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+const updateProfile = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const { name, password } = req.body;
+
+    const user = await User.findById(userId).select("+password");
+    if (!user) {
+      return res.status(404).json({ message: "user not found" });
+    }
+
+    if (name) {
+      user.name = name;
+    }
+
+    if (password && password.trim()) {
+      user.password = await bcrypt.hash(password, 12);
+    }
+
+    user.updatedBy = req.user.id;
+
+    await user.save();
+
+    return res.status(200).json({
+      message: "Profile updated successfully",
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        status: user.status,
+        updatedBy: user.updatedBy,
+        updatedAt: user.updatedAt,
+      },
+    });
+  } catch (err) {
+    return res.status(500).json({ message: "Server error" });
+  }
 };
 
 module.exports = {
   userLogin,
-  getProfile
+  getProfile,
+  updateProfile,
 };

@@ -108,6 +108,7 @@ function Users() {
                 <th>Email</th>
                 <th>Role</th>
                 <th>status</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
@@ -117,6 +118,11 @@ function Users() {
                   <td>{user.email}</td>
                   <td>{user.role}</td>
                   <td>{user.status}</td>
+                  <td>
+                    <button onClick={() => navigate(`/users/${user._id}/edit`)}>
+                      Edit
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>

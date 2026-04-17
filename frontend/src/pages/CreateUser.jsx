@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { useState } from "react";
 import api from "../services/api";
+import AlertMessage from "../components/AlertMessage";
 
 function CreateUser() {
   const [name, setName] = useState("");
@@ -49,76 +50,72 @@ function CreateUser() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-indigo-100">
+    <div className="page-container">
       <Navbar />
 
       <div className="max-w-2xl mx-auto px-4 py-10">
-        <div className="bg-white/90 backdrop-blur rounded-2xl shadow-xl border border-white/60 overflow-hidden">
+        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl">
           <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-6 text-white">
-            <h2 className="text-2xl font-bold">Create New User</h2>
-            <p className="text-sm text-blue-100 mt-1">
+            <h1 className="text-2xl font-bold">Create New User</h1>
+            <p className="mt-1 text-sm text-blue-100">
               Add a new user and assign role and account status
             </p>
           </div>
 
           <div className="p-6">
             <button
-              type="button"
               onClick={() => navigate("/users")}
-              className="mb-5 inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800"
+              className="mb-5 inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline"
             >
               ← Back to Users
             </button>
 
+            <div className="space-y-4 mb-4">
+              <AlertMessage type="error" message={error} />
+              <AlertMessage type="success" message={success} />
+            </div>
+
             <form onSubmit={handleSubmit} className="space-y-5">
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">
-                  Full Name
-                </label>
+                <label className="label">Full Name</label>
                 <input
                   type="text"
                   placeholder="Enter full name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full border border-slate-300 bg-white px-4 py-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                  className="input"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">
-                  Email Address
-                </label>
+                <label className="label">Email Address</label>
                 <input
                   type="email"
                   placeholder="Enter email address"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full border border-slate-300 bg-white px-4 py-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                  className="input"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">
-                  Password
-                </label>
+                <label className="label">Password</label>
                 <input
                   type="password"
                   placeholder="Enter secure password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full border border-slate-300 bg-white px-4 py-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                  className="input"
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-                    Role
-                  </label>
+                  <label className="label">Role</label>
                   <select
                     value={role}
                     onChange={(e) => setRole(e.target.value)}
-                    className="w-full border border-slate-300 bg-white px-4 py-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                    className="select"
                   >
                     <option value="user">User</option>
                     <option value="manager">Manager</option>
@@ -127,13 +124,11 @@ function CreateUser() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-                    Status
-                  </label>
+                  <label className="label">Status</label>
                   <select
                     value={status}
                     onChange={(e) => setStatus(e.target.value)}
-                    className="w-full border border-slate-300 bg-white px-4 py-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                    className="select"
                   >
                     <option value="active">Active</option>
                     <option value="inactive">Inactive</option>
@@ -141,23 +136,11 @@ function CreateUser() {
                 </div>
               </div>
 
-              {error && (
-                <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-                  {error}
-                </div>
-              )}
-
-              {success && (
-                <div className="rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
-                  {success}
-                </div>
-              )}
-
               <div className="pt-2">
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold py-3 rounded-xl shadow-md hover:from-blue-700 hover:to-indigo-700 transition disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="w-full rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 py-3 font-semibold text-white shadow-md transition hover:from-blue-700 hover:to-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {loading ? "Creating User..." : "Create User"}
                 </button>

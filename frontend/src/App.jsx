@@ -5,13 +5,14 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 import Users from "./pages/Users";
 import CreateUser from "./pages/CreateUser";
 import EditUser from "./pages/EditUser";
-import Profile from "./pages/profile";
+import Profile from "./pages/Profile";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Login />} />
+
         <Route
           path="/dashboard"
           element={
@@ -20,34 +21,38 @@ function App() {
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/users"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute allowedRoles={["admin", "manager"]}>
               <Users />
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/create-user"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute allowedRoles={["admin"]}>
               <CreateUser />
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/users/:id/edit"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute allowedRoles={["admin", "manager"]}>
               <EditUser />
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/profile"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute allowedRoles={["admin", "manager", "user"]}>
               <Profile />
             </ProtectedRoute>
           }

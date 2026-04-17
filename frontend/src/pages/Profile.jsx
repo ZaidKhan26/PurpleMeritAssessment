@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
 import Navbar from "../components/Navbar";
+import PageHeader from "../components/PageHeader";
+import LoadingSpinner from "../components/LoadingSpinner";
+import AlertMessage from "../components/AlertMessage";
+import RoleBadge from "../components/RoleBadge";
+import StatusBadge from "../components/StatusBadge";
 
 function Profile() {
   const [user, setUser] = useState(null);
@@ -26,69 +31,64 @@ function Profile() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="page-container">
       <Navbar />
 
-      <div className="flex justify-center items-center mt-10 px-4">
-        <div className="bg-white shadow-xl rounded-2xl p-8 w-full max-w-lg">
-          <h2 className="text-2xl font-bold mb-6 text-center">My Profile</h2>
+      <div className="page-content">
+        <PageHeader
+          title="My Profile"
+          subtitle="View your personal account details."
+        />
 
-          {loading && (
-            <p className="text-center text-gray-500">Loading profile...</p>
-          )}
+        {error && <AlertMessage type="error" message={error} />}
 
-          {error && (
-            <p className="text-center text-red-500">{error}</p>
-          )}
+        {loading ? (
+          <LoadingSpinner text="Loading profile..." />
+        ) : user ? (
+          <div className="card max-w-3xl">
+            <div className="card-body space-y-5">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div className="rounded-xl bg-slate-50 p-4">
+                  <p className="text-sm text-slate-500">Name</p>
+                  <p className="mt-1 font-semibold text-slate-800">{user.name}</p>
+                </div>
 
-          {!loading && user && (
-            <div className="space-y-4">
-              <div className="flex justify-between border-b pb-2">
-                <span className="text-gray-500">Name</span>
-                <span className="font-medium">{user.name}</span>
-              </div>
+                <div className="rounded-xl bg-slate-50 p-4">
+                  <p className="text-sm text-slate-500">Email</p>
+                  <p className="mt-1 font-semibold text-slate-800">{user.email}</p>
+                </div>
 
-              <div className="flex justify-between border-b pb-2">
-                <span className="text-gray-500">Email</span>
-                <span className="font-medium">{user.email}</span>
-              </div>
+                <div className="rounded-xl bg-slate-50 p-4">
+                  <p className="text-sm text-slate-500">Role</p>
+                  <div className="mt-2">
+                    <RoleBadge role={user.role} />
+                  </div>
+                </div>
 
-              <div className="flex justify-between border-b pb-2">
-                <span className="text-gray-500">Role</span>
-                <span className="px-2 py-1 rounded bg-blue-100 text-blue-700 text-sm">
-                  {user.role}
-                </span>
-              </div>
+                <div className="rounded-xl bg-slate-50 p-4">
+                  <p className="text-sm text-slate-500">Status</p>
+                  <div className="mt-2">
+                    <StatusBadge status={user.status} />
+                  </div>
+                </div>
 
-              <div className="flex justify-between border-b pb-2">
-                <span className="text-gray-500">Status</span>
-                <span
-                  className={`px-2 py-1 rounded text-sm ${
-                    user.status === "active"
-                      ? "bg-green-100 text-green-700"
-                      : "bg-red-100 text-red-700"
-                  }`}
-                >
-                  {user.status}
-                </span>
-              </div>
+                <div className="rounded-xl bg-slate-50 p-4">
+                  <p className="text-sm text-slate-500">Created At</p>
+                  <p className="mt-1 text-sm font-medium text-slate-800">
+                    {new Date(user.createdAt).toLocaleString()}
+                  </p>
+                </div>
 
-              <div className="flex justify-between border-b pb-2">
-                <span className="text-gray-500">Created</span>
-                <span className="text-sm text-gray-600">
-                  {new Date(user.createdAt).toLocaleString()}
-                </span>
-              </div>
-
-              <div className="flex justify-between">
-                <span className="text-gray-500">Updated</span>
-                <span className="text-sm text-gray-600">
-                  {new Date(user.updatedAt).toLocaleString()}
-                </span>
+                <div className="rounded-xl bg-slate-50 p-4">
+                  <p className="text-sm text-slate-500">Updated At</p>
+                  <p className="mt-1 text-sm font-medium text-slate-800">
+                    {new Date(user.updatedAt).toLocaleString()}
+                  </p>
+                </div>
               </div>
             </div>
-          )}
-        </div>
+          </div>
+        ) : null}
       </div>
     </div>
   );
